@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import he from 'he';
 
 const HomeScreen = ({ startQuiz }) => (
@@ -10,11 +10,39 @@ const HomeScreen = ({ startQuiz }) => (
   </div>
 );
 
-const TestScreen = ({ category, question, onNextQuestion, onQuizFinish, totalQuestions }) => {
-  const [userAnswer, setUserAnswer] = useState(null);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+const QuestionResult = ({ question, userAnswer, correctAnswer }) => (
+  <div style={{ color: userAnswer === correctAnswer ? 'green' : 'red' }}>
+    <p>{he.decode(question)}</p>
+    <p>Your answer: {userAnswer}</p>
+    <p>Correct answer: {correctAnswer}</p>
+    <hr />
+  </div>
+);
 
-  
+const ResultScreen = ({ userResults, playAgain }) => {
+  const correctCount = userResults.filter(result => result.answer === 'True').length;
+  const totalCount = userResults.length;
+
+  return (
+    <div>
+      <h1>Results Screen</h1>
+      <p>Score: {correctCount} / {totalCount}</p>
+      {userResults.map((result, index) => (
+        <QuestionResult
+          key={index}
+          question={result.question.question}
+          userAnswer={result.answer}
+          correctAnswer={result.question.correct_answer}
+        />
+      ))}
+      <button onClick={playAgain}>PLAY AGAIN</button>
+    </div>
+  );
+};
+
+const TestScreen = ({ category, question, questionIndex, totalQuestions, onNextQuestion, onQuizFinish }) => {
+  const [userAnswer, setUserAnswer] = React.useState(null);
+
   const handleAnswer = (answer) => {
     setUserAnswer(answer);
   };
@@ -22,76 +50,76 @@ const TestScreen = ({ category, question, onNextQuestion, onQuizFinish, totalQue
   const handleNextQuestion = () => {
     onNextQuestion(userAnswer);
     setUserAnswer(null);
-    setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
   };
 
   const handleFinishQuiz = () => {
-    onQuizFinish();
+    onQuizFinish(userAnswer);
   };
-
-  const questionProgress = `${currentQuestionIndex + 1}/${totalQuestions}`;
 
   return (
     <div>
       <h1>{category}</h1>
       <p>{question}</p>
-     
       <div>
         <button onClick={() => handleAnswer('True')}>True</button>
         <button onClick={() => handleAnswer('False')}>False</button>
       </div>
-      <p>{questionProgress}</p>
       {userAnswer !== null && (
         <div>
           <p>Your answer is: {userAnswer}</p>
-          {currentQuestionIndex < totalQuestions - 1 ? (
+          {questionIndex < totalQuestions - 1 ? (
             <button onClick={handleNextQuestion}>Next question</button>
           ) : (
             <button onClick={handleFinishQuiz}>Finish Quiz</button>
           )}
         </div>
-        
       )}
+
+      
+      <p>{questionIndex + 1}/{totalQuestions}</p>
     </div>
-    
   );
 };
 
-
-const QuizScreen = ({ questions, onQuizFinish }) => {
-  const [userAnswers, setUserAnswers] = useState([]);
+const QuizScreen = ({ questions, onQuizFinish, playAgain }) => {
+  const [currentQuestionIndex, setCurrentQuestionIndex] = React.useState(0);
+  const [userAnswers, setUserAnswers] = React.useState([]);
 
   const handleNextQuestion = (userAnswer) => {
-    setUserAnswers((prevAnswers) => [...prevAnswers, { question: questions[userAnswers.length].question, answer: userAnswer }]);
+    setUserAnswers((prevAnswers) => [
+      ...prevAnswers,
+      { question: questions[currentQuestionIndex], answer: userAnswer },
+    ]);
+    setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
   };
 
-
+  const handleFinishQuiz = () => {
+    onQuizFinish(userAnswers);
+  };
 
   return (
     <div>
-      {userAnswers.length < questions.length ? (
+      {currentQuestionIndex < questions.length ? (
         <TestScreen
-          category={he.decode(questions[userAnswers.length].category)} 
-          question={he.decode(questions[userAnswers.length].question)} 
-          onNextQuestion={(userAnswer) => handleNextQuestion(userAnswer)}
-          onQuizFinish={onQuizFinish}
+          category={he.decode(questions[currentQuestionIndex].category)}
+          question={he.decode(questions[currentQuestionIndex].question)}
+          questionIndex={currentQuestionIndex}
           totalQuestions={questions.length}
+          onNextQuestion={(userAnswer) => handleNextQuestion(userAnswer)}
+          onQuizFinish={handleFinishQuiz} 
         />
       ) : (
-        <div>
-          <h1>¡Quiz Finished!</h1>
-          <button onClick={() => onQuizFinish(userAnswers)}>See results</button>
-        </div>
+        <ResultScreen userResults={userAnswers} playAgain={playAgain} />
       )}
     </div>
   );
 };
 
 const App = () => {
-  const [questions, setQuestions] = useState([]);
-  const [quizStarted, setQuizStarted] = useState(false);
-  const [quizFinished, setQuizFinished] = useState(false);
-  const [userResults, setUserResults] = useState([]);
+  const [questions, setQuestions] = React.useState([]);
+  const [quizStarted, setQuizStarted] = React.useState(false);
+  const [quizFinished, setQuizFinished] = React.useState(false);
+  const [userResults, setUserResults] = React.useState([]);
 
   const startQuiz = async () => {
     try {
@@ -109,15 +137,18 @@ const App = () => {
     setQuizFinished(true);
   };
 
+  const playAgain = () => {
+    setQuizFinished(false);
+    setQuizStarted(false);
+    setUserResults([]);
+  };
+
   return (
     <div>
       {quizFinished ? (
-        <div>
-          <h1>You scored</h1>
-          <pre>{JSON.stringify(userResults, null, 2)}</pre>
-        </div>
+        <ResultScreen userResults={userResults} playAgain={playAgain} />
       ) : quizStarted ? (
-        <QuizScreen questions={questions} onQuizFinish={finishQuiz} />
+        <QuizScreen questions={questions} onQuizFinish={finishQuiz} playAgain={playAgain} />
       ) : (
         <HomeScreen startQuiz={startQuiz} />
       )}
