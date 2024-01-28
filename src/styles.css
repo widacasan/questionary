@@ -1,0 +1,169 @@
+/**
+ * Estilos globales de la aplicación.
+ */
+
+/* Variables de colores */
+:root {
+  --primary-color: #92c7cf;
+  --secondary-color: #aad7d9;
+  --tertiary-color: #fbf9f1;
+  --quaternary-color: #e5e1da;
+}
+
+/* Estilos generales del cuerpo del documento */
+body {
+  font-family: "Montserrat", sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--primary-color);
+}
+
+/* Estilos para contenedores comunes */
+.container {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: var(--secondary-color);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* Estilos para resultados de preguntas */
+.result {
+  margin-bottom: 20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  border-radius: 5px;
+}
+
+.result.correct {
+  background-color: #d4edda;
+}
+
+.result.incorrect {
+  background-color: #f8d7da;
+}
+
+/* Estilos para botones de inicio y reinicio */
+.start-button,
+.play-again-button {
+  background-color: var(--quaternary-color);
+  color: #000000;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.start-button:hover,
+.play-again-button:hover {
+  background-color: #0056b3;
+  color: #fff;
+}
+
+.start-button:active,
+.play-again-button:active {
+  background-color: #004d9e;
+}
+
+/* Estilos para la pantalla de prueba */
+.test-container {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: var(--tertiary-color);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  border-radius: 5px;
+}
+
+/* Estilos para botones de respuesta */
+.answer-buttons button {
+  font-size: 16px;
+  margin: 0 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.answer-buttons button.true-button {
+  background-color: var(--quaternary-color);
+  color: #000000;
+  padding: 15px 30px;
+  transition: background-color 0.3s ease;
+}
+
+.answer-buttons button.true-button:hover {
+  background-color: #1c8733;
+  color: #fff;
+}
+
+.answer-buttons button.false-button {
+  background-color: var(--quaternary-color);
+  color: #000000;
+  padding: 15px 30px;
+  transition: background-color 0.3s ease;
+}
+
+.answer-buttons button.false-button:hover {
+  background-color: #c82333;
+  color: #fff;
+}
+
+/* Estilos para botones de siguiente pregunta y finalizar el quiz */
+.next-question-button,
+.finish-quiz-button {
+  background-color: var(--quaternary-color);
+  color: #000000;
+  padding: 15px 30px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.next-question-button:hover,
+.finish-quiz-button:hover {
+  background-color: #0056b3;
+  color: #fff;
+}
+
+.next-question-button:active,
+.finish-quiz-button:active {
+  background-color: #004d9e;
+  color: #fff;
+}
+
+/* Estilos para mostrar el progreso de la pregunta */
+.progress {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #777;
+}
+
+/* Estilos para el contenedor principal del quiz */
+.quiz-container {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: var(--secondary-color);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  border-radius: 5px;
+}
+
+/* Estilos responsivos para pantallas pequeñas */
+@media (max-width: 600px) {
+  .container,
+  .result,
+  .play-again-button,
+  .test-container,
+  .answer-buttons button,
+  .next-question-button,
+  .finish-quiz-button,
+  .quiz-container {
+    max-width: 100%;
+  }
+}
